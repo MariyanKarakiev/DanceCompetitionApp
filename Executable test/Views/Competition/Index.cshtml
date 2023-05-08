@@ -1,0 +1,36 @@
+﻿@using BussinessLayer.Models;
+@model List<Competition>;
+
+@{
+    ViewData["Title"] = "Home Page";
+    var comp = @ViewData["message"];
+
+}
+
+<div class="text-center">
+    <table class="table m-0">
+        <thead>
+            <tr>
+                <th>Name</th>              
+                <th>CreatedOn</th>             
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var competition in Model)
+                {
+                    <tr>
+                        <td>@competition.Name</td>
+                        <td>@competition.CreatedOn</td>
+                        <td>
+                            <a asp-controller="CompetetiveClass" asp-action="Index" asp-route-name="@competition.Name" class="btn btn-outline-primary">See Classes</a>
+                            <a asp-controller="Competition" asp-action="Edit" asp-route-name="@competition.Name" class="btn btn-outline-primary">Edit</a>
+                            <a asp-controller="Competition" asp-action="Delete" asp-route-name="@competition.Name" class="btn btn-outline-primary">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <a asp-controller="Competition" asp-action="Create">Добавете състезание</a>
+</div>

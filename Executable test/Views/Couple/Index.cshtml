@@ -1,0 +1,36 @@
+﻿@using BussinessLayer.Models;
+@model IEnumerable<CoupleViewModel>;
+
+@{
+    ViewData["Title"] = ViewData["CompetetiveClass"];
+}
+
+<h1>@ViewData["CompetetiveClass"]</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+            <tr>
+                <th>Name</th>              
+                <th>CompetetiveClass</th>             
+            </tr>
+        </thead>
+    <tbody>
+        @{
+            foreach (var couple in Model)
+            {
+                <tr>
+                    <td>@couple.Name</td>
+                    <td>@couple.CompetetiveClass</td>
+                    <td>
+                        <a asp-controller="CompetetiveClass" asp-action="Index" asp-route-name="@couple.Name" class="btn btn-outline-primary">DEtails</a>
+                        <a  asp-action="Edit" asp-route-name="@couple.Name" class="btn btn-outline-primary">Edit</a>
+                        <a  asp-action="Delete" asp-route-name="@couple.Name" class="btn btn-outline-primary">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

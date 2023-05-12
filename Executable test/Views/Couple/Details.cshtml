@@ -5,23 +5,23 @@
     var couple = Model;
 }
 
-<h1>Details</h1>
+<h1>Детайли за двойка @Model.Name</h1>
 
 <div>
     <table class="table">
         <thead>
             <tr>
-                <th> @Html.DisplayNameFor(model => model.Name)</th>
-                <th style="color:red"> @Html.DisplayNameFor(model => model.Place)</th>
+                <th>Име</th>
+                <th style="color:red">Класация</th>
+                <th>Сбор</th>
                 @{
                     foreach (var judge in couple.JudgePlaceList)
                     {
                         <td>@judge.Item1</td>
                     }
                 }
-                <th> @Html.DisplayNameFor(model => model.CompetetiveClass)</th>
-                <th> @Html.DisplayNameFor(model => model.CreatedOn)</th>
-                <th> @Html.DisplayNameFor(model => model.UpdatedOn)</th>
+                <th>Състезателен клас</th>
+ 
 
             </tr>
         </thead>
@@ -29,6 +29,7 @@
             <tr>
                 <td>@couple.Name</td>
                 <td style="color:red">@couple.Place</td>
+                <td>@couple.Sum</td>
                 @{
                     foreach (var judge in couple.JudgePlaceList)
                     {
@@ -36,15 +37,10 @@
                     }
                 }
                 <td>@couple.CompetetiveClass</td>
-                <td>@couple.CreatedOn</td>
-                <td>@couple.UpdatedOn</td>
-                <td>
-                    <a asp-action="Delete" asp-route-name="@couple.Name" class="btn btn-outline-primary">Delete</a>
-                </td>
             </tr>
         </tbody>
     </table>
 </div>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад към състезателни двойки</a>
 </div>

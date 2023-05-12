@@ -30,14 +30,21 @@ namespace Executable_test.Controllers
             }
 
             var competetiveClass = (string)_memeoryCache.Get("CompetetiveClass");
-          //  _coupleService.Adjuicate();
+
+            if (competetiveClass == null)
+            {
+                return RedirectToAction("Index", "CompetetiveClass");
+            }
+            //  _coupleService.Adjuicate();
 
             var all = _coupleService.GetAll(competetiveClass);
 
             var couplesModel = all.Select(c => new CoupleViewModel()
             {
                 Name = c.Name,
-                CompetetiveClass = c.CompetetiveClass
+                CompetetiveClass = c.CompetetiveClass,
+                CreatedOn = DateTime.Parse(c.CreatedOn),
+                Place = int.Parse(c.Place)
             }).AsEnumerable();
 
             ViewData["CompetetiveClass"] = competetiveClass;
@@ -48,7 +55,10 @@ namespace Executable_test.Controllers
         public ActionResult Details(string name)
         {
             var competetiveClass = (string)_memeoryCache.Get("CompetetiveClass");
-
+            if (competetiveClass == null)
+            {
+                return RedirectToAction("Index", "CompetetiveClass");
+            }
             var couple = _coupleService.Get(name, competetiveClass);
 
             var mapped = new CoupleViewModel()
@@ -57,19 +67,21 @@ namespace Executable_test.Controllers
                 CompetetiveClass = couple.CompetetiveClass,
                 CreatedOn = DateTime.Parse(couple.CreatedOn),
                 UpdatedOn = DateTime.Parse(couple.UpdatedOn),
-                Sum = int.Parse(couple.Sum)
-                // Place = couple.Place
+                Sum = int.Parse(couple.Sum),
+                Place = int.Parse(couple.Place)
             };
 
             var count = int.Parse(couple.JudgesCount);
 
             IDictionary<string, object?> coupleDict = couple;
+
             var t = new List<(string, object?)>();
+
             for (int i = 0; i < count; i++)
             {
                 var c = ((char)(i + 65)).ToString();
                 var val = coupleDict[$"Judge{c}"];
-               t.Add(($"Judge{c}", val));
+                t.Add(($"Judge{c}", val));
             }
 
             mapped.JudgePlaceList = t;
@@ -87,8 +99,14 @@ namespace Executable_test.Controllers
         public ActionResult Create(CoupleViewModel model)
         {
             var competetiveClassName = (string)_memeoryCache.Get("CompetetiveClass");
+
+            if (competetiveClassName == null)
+            {
+                return RedirectToAction("Index", "CompetetiveClass");
+            }
+
             var competetiveClass = _competetiveClassService.Get(competetiveClassName);
-            _coupleService.Create(new Couple() { Name = model.Name, CompetetiveClass = competetiveClassName },competetiveClass.JudgesCount);
+            _coupleService.Create(new Couple() { Name = model.Name, CompetetiveClass = competetiveClassName }, competetiveClass.JudgesCount);
 
             return RedirectToAction(nameof(Index));
         }
@@ -97,7 +115,10 @@ namespace Executable_test.Controllers
         public ActionResult Delete(string name)
         {
             var competetiveClass = (string)_memeoryCache.Get("CompetetiveClass");
-
+            if (competetiveClass == null)
+            {
+                return RedirectToAction("Index", "CompetetiveClass");
+            }
             var couple = _coupleService.Get(name, competetiveClass);
 
             var mapped = new CoupleViewModel()
@@ -114,20 +135,12 @@ namespace Executable_test.Controllers
         public ActionResult Delete(Couple couple)
         {
             var competetiveClass = (string)_memeoryCache.Get("CompetetiveClass");
-
-            _coupleService.Delete(couple.Name, competetiveClass);
-            return RedirectToAction(nameof(Index));
-        }
-
-        public ActionResult GetPlacing(string name)
-        {         
-            var couples = _coupleService.GetAll(name);
-
-            foreach (var couple in couples)
+          
+            if (competetiveClass == null)
             {
-                _coupleService.Adjuicate(couple.Name, name);
+                return RedirectToAction("Index", "CompetetiveClass");
             }
-
+            _coupleService.Delete(couple.Name, competetiveClass);
             return RedirectToAction(nameof(Index));
         }
     }

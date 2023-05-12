@@ -6,16 +6,15 @@
 }
 
 <h1>@ViewData["CompetitionName"]</h1>
-<p> <a asp-controller="Competition" asp-action="Index">Назад към състезания</a> </p>
+<p> <a asp-controller="Competition" asp-action="Index">Назад към състезанията</a> </p>
 
 <table class="table m-0">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Judges</th>
-            <th>Couples</th>
-            <th>CreatedOn</th>
-            <th>Competition</th>
+            <th>Име</th>
+            <th>Брой съдии</th>
+            <th>Брой двойки</th>
+            <th>Състезание</th>
             <th></th>
         </tr>
     </thead>
@@ -27,7 +26,6 @@
                     <td>@couple.Name</td>
                     <td>@couple.JudgesCount</td>
                     <td>@couple.CouplesCount</td>
-                    <td>@couple.CreatedOn</td>
                     <td>
                         <a asp-action="Judge" asp-route-name="@couple.Name" class="btn btn-outline-primary">Добави оценяване</a>
                         <a asp-controller="Couple" asp-action="Index" asp-route-name="@couple.Name" class="btn btn-outline-primary">Двойки/Класация</a>

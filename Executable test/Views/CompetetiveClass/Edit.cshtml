@@ -5,9 +5,8 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Редактиране на състезателен клас</h1>
 
-<h4>CompetetiveClassViewModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -19,39 +18,24 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label class="control-label">Име</label>
                 <input asp-for="NewName" class="form-control" />
                 <span asp-validation-for="NewName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CompetitionName" class="control-label"></label>
+                <label class="control-label">Име на състезание</label>
                 <input asp-for="CompetitionName" class="form-control" />
                 <span asp-validation-for="CompetitionName" class="text-danger"></span>
-            </div>
-            <div class="form-group" hidden>
-                <label asp-for="CreatedOn" class="control-label"></label>
-                <input asp-for="CreatedOn" class="form-control" />
-                <span asp-validation-for="CreatedOn" class="text-danger"></span>
-            </div>
-            <div class="form-group" hidden>
-                <label asp-for="UpdatedOn" class="control-label"></label>
-                <input asp-for="UpdatedOn" class="form-control" />
-                <span asp-validation-for="UpdatedOn" class="text-danger"></span>
-            </div>
-            <div class="form-group" hidden>
-                <label asp-for="DeletedOn" class="control-label"></label>
-                <input asp-for="DeletedOn" class="form-control" />
-                <span asp-validation-for="DeletedOn" class="text-danger"></span>
-            </div>
+            </div>          
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Запази" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад към състезателните класове</a>
 </div>
 
 @section Scripts {

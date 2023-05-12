@@ -8,11 +8,11 @@
 }
 
 <div class="text-center">
-    <table class="table m-0">
+    <table class="table m-0 mt-3">
         <thead>
             <tr>
-                <th>Name</th>              
-                <th>CreatedOn</th>             
+                <th>Име</th>              
+                <th>Създадено</th>             
             </tr>
         </thead>
         <tbody>
@@ -23,9 +23,9 @@
                         <td>@competition.Name</td>
                         <td>@competition.CreatedOn</td>
                         <td>
-                            <a asp-controller="CompetetiveClass" asp-action="Index" asp-route-name="@competition.Name" class="btn btn-outline-primary">See Classes</a>
-                            <a asp-controller="Competition" asp-action="Edit" asp-route-name="@competition.Name" class="btn btn-outline-primary">Edit</a>
-                            <a asp-controller="Competition" asp-action="Delete" asp-route-name="@competition.Name" class="btn btn-outline-primary">Delete</a>
+                            <a asp-controller="CompetetiveClass" asp-action="Index" asp-route-name="@competition.Name" class="btn btn-outline-primary">Състезателни класове</a>
+                            <a asp-controller="Competition" asp-action="Edit" asp-route-name="@competition.Name" class="btn btn-outline-primary">Редактирай</a>
+                            <a asp-controller="Competition" asp-action="Delete" asp-route-name="@competition.Name" class="btn btn-outline-primary">Изтрий</a>
                         </td>
                     </tr>
                 }

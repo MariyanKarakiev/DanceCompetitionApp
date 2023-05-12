@@ -4,7 +4,10 @@ using DanceCompetitionApp;
 using Executable_test.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Caching.Memory;
+using System.Reflection;
+using System.Text.Json;
 
 namespace Executable_test.Controllers
 {
@@ -36,6 +39,10 @@ namespace Executable_test.Controllers
 
             var competitionName = (string)_memeoryCache.Get("competition");
 
+            if (competitionName == null)
+            {
+                return RedirectToAction("Index", "Competition");
+            }
             var all = _competetiveClassService.GetAll(competitionName).ToList();
 
             var classes = all.Select(a =>
@@ -73,7 +80,10 @@ namespace Executable_test.Controllers
         {
 
             var competitionName = _memeoryCache.Get("competition").ToString();
-
+            if (competitionName == null)
+            {
+                return RedirectToAction("Index", "Competition");
+            }
             var competetiveClass = new CompetetiveClass()
             {
                 Name = model.Name,
@@ -157,29 +167,92 @@ namespace Executable_test.Controllers
 
         public ActionResult Judge(string name)
         {
-            var competetiveClass = _competetiveClassService.Get(name);
-
-            var model = new JudgingViewModel();
-
-            var couples = _coupleService.GetAll(name);
-
-            var judgesCount = couples.First().JudgesCount;
-
-            for (int c = 0; c < int.Parse(judgesCount); c++)
+            try
             {
-                var judgeName = $"Judge{((char)(c + 65)).ToString()}";
+                var competetiveClass = _competetiveClassService.Get(name);
 
-                model.JudgePlacing.Add(judgeName, couples.Select(c => ((string)c.Name, "0")).ToList());
+                var model = new JudgingViewModel()
+                {
+                    CompetitionName = competetiveClass.Name,
+                };
+
+                var couples = _coupleService.GetAll(name);
+
+                var judgesCount = couples.First().JudgesCount;
+
+                for (int c = 0; c < int.Parse(judgesCount); c++)
+                {
+                    var judgeName = $"Judge{((char)(c + 65)).ToString()}";
+
+                    model.JudgePlacing.Add(judgeName, couples.Select(c => ((string)c.Name, "0")).ToList());
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(Index));
+
             }
 
-            return View(model);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Judge(JudgingViewModel model)
+        public ActionResult Judge([FromBody] JsonElement modelData)
         {
-            return RedirectToAction(nameof(Index));
+            var model = DataBind(modelData);
+            var competitionName = model.CompetitionName;
+            var couples = _coupleService.GetAll(competitionName);
+
+            foreach (var c in couples)
+            {
+                var judgePlace = new List<(string, int)>();
+
+                foreach (var jp in model.JudgePlacing)
+                {
+                    foreach (var couplePlace in jp.Value)
+                    {
+                        if (couplePlace.Couple == c.Name)
+                        {
+                            judgePlace.Add((jp.Key, int.Parse(couplePlace.Place)));
+                        }
+
+                    }
+                }
+                _coupleService.Adjuicate(c.Name, competitionName, judgePlace);
+            }
+
+
+            return Ok(model.CompetitionName);
+        }
+
+        public JudgingViewModel DataBind(JsonElement model)
+        {
+            var dict = JsonSerializer.Deserialize<Dictionary<string, dynamic>>(model);
+            var name = dict.Last().Value.ToString();
+
+            dict.Remove("name");
+
+            var modelToAdd = new JudgingViewModel()
+            {
+                CompetitionName = name,
+            };
+
+            foreach (var s in dict)
+            {
+                var judgePlaceArr = JsonSerializer.Deserialize<List<object>>(s.Value);
+                var judgePlaceList = new List<(string, string)>();
+
+                foreach (var kvp in judgePlaceArr)
+                {
+                    var str = JsonSerializer.Deserialize<List<string>>(kvp);
+
+                    judgePlaceList.Add(((string)str[0], (string)str[1]));
+                }
+
+                modelToAdd.JudgePlacing.Add(s.Key, judgePlaceList);
+            }
+            return modelToAdd;
         }
     }
 }

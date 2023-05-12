@@ -13,9 +13,9 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Place</th>
-            <th>Name</th>
-            <th>CompetetiveClass</th>
+            <th style="color:red">Място</th>
+            <th>Име</th>
+            <th>Състезателен клас</th>
         </tr>
     </thead>
     <tbody>
@@ -23,7 +23,7 @@
             foreach (var couple in Model)
             {
                 <tr>
-                    <td>@couple.Place</td>
+                    <td style="color:red">@couple.Place.</td>
                     <td>@couple.Name</td>
                     <td>@couple.CompetetiveClass</td>
                     <td>

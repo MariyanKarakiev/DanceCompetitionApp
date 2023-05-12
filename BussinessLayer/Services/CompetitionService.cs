@@ -14,7 +14,7 @@ namespace BussinessLayer.Services
 {
     public class CompetitionService
     {
-        string file = @".\Database.csv";
+        string file = @".\Competitions.csv";
 
         public List<Competition> Competitions { get; set; } = new List<Competition>();
         public CompetitionService()
@@ -34,7 +34,8 @@ namespace BussinessLayer.Services
         {
             var competitionToCreate = new Competition()
             {
-                Name = name
+                Name = name,
+                CreatedOn = DateTime.Now
             };
 
             var competitions = ReadCsv();

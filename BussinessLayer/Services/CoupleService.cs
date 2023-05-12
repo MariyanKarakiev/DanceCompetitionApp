@@ -119,7 +119,7 @@ namespace BussinessLayer.Services
         private IEnumerable<dynamic> AddJudges(Couple couple, int judgesCount)
         {
             var coupleList = new List<Couple>() { couple };
-          
+
             return AddJudges(coupleList, judgesCount);
         }
 
@@ -154,7 +154,29 @@ namespace BussinessLayer.Services
             return result;
         }
 
-        public void Adjuicate(string name, string compClass)
+        //public void Adjuicate(string name, string compClass)
+        //{
+        //    var couples = GetAll(compClass);
+
+        //    var couple = couples.Where(c => c.Name == name).FirstOrDefault();
+
+        //    IDictionary<string, object?> coupleDictionary = couple;
+
+        //    var sum = 0;
+        //    var judgesCount = int.Parse(coupleDictionary["JudgesCount"].ToString());
+
+        //    for (int i = 65; i < judgesCount + 65; i++)
+        //    {
+        //        var letter = $"Judge{(char)i}";
+        //        var place = coupleDictionary[letter];
+        //        sum += int.Parse(place.ToString());
+        //    }
+
+        //    couples.Where(c => c.Name == name).FirstOrDefault().Sum = sum;
+
+        //    WriteCsv(couples, false);
+        //}
+        public void Adjuicate(string name, string compClass, List<(string judge, int place)> judgePlace)
         {
             var couples = GetAll(compClass);
 
@@ -163,16 +185,21 @@ namespace BussinessLayer.Services
             IDictionary<string, object?> coupleDictionary = couple;
 
             var sum = 0;
-            var judgesCount = int.Parse(coupleDictionary["JudgesCount"].ToString());
+            var judgesCount = couple.JudgesCount;
 
-            for (int i = 65; i < judgesCount + 65; i++)
+            foreach (var jp in judgePlace)
             {
-                var letter = $"Judge{(char)i}";
-                var place = coupleDictionary[letter];
-                sum += int.Parse(place.ToString());
+                coupleDictionary[jp.judge] = jp.place;
+                sum += jp.place;
             }
 
             couples.Where(c => c.Name == name).FirstOrDefault().Sum = sum;
+
+            couples.OrderBy(c => int.Parse(c.Sum));
+            for (int i = 0; i < couples.Count; i++)
+            {
+                couples[i].Place = i+1;
+            }
 
             WriteCsv(couples, false);
         }

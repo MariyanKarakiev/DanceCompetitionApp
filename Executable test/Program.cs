@@ -41,15 +41,24 @@ void Seed()
     var _competetiveClassService = app.Services.GetService<CompetetiveClassService>();
     var _coupleService = app.Services.GetService<CoupleService>();
 
-    _competetiveClassService.Create(new CompetetiveClass()
-    {
-        Name = "Set up class",
-        JudgesCount = 10
-    });
+    var competetiveClasses = _competetiveClassService.GetAll();
 
-    _coupleService.Create(new Couple()
+    if (competetiveClasses.Count == 0)
     {
-        Name = "Set up couple",
-        CompetetiveClass = "Set up"
-    }, 10);
+        _competetiveClassService.Create(new CompetetiveClass()
+        {
+            Name = "Set up class",
+            JudgesCount = 10
+        });
+    }
+    var couples = _competetiveClassService.GetAll();
+
+    if (couples.Count == 0)
+    {
+        _coupleService.Create(new Couple()
+        {
+            Name = "Set up couple",
+            CompetetiveClass = "Set up"
+        }, 10);
+    }
 }

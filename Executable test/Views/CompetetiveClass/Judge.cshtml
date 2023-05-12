@@ -4,30 +4,28 @@
     ViewData["Title"] = "Judge";
 }
 
-<h1>Judge</h1>
+<h1>Добавяне на съдийски оценки</h1>
 
-<h4>JudgingViewModel</h4>
+<h4 id="name">@Model.CompetitionName</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Judge">
+        <form id="form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
             @{
                 foreach (var judge in Model.JudgePlacing)
                 {
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>  <h4>@judge.Key</h4></th>
+                                <th>  <h4 id="judge">@judge.Key</h4></th>
                         </thead>
                         <tbody>
                             <tr>
                                 @{
                                     foreach (var tuple in @judge.Value)
                                     {
-                                        <th>  <h6>@tuple.Couple</h6></th>
-
+                                        <th>  <h6 id="couple">@tuple.Couple</h6></th>
                                     }
                                 }
                             </tr>
@@ -36,7 +34,7 @@
                                     foreach (var tuple in @judge.Value)
                                     {
                                         <td>
-                                            <input asp-for="@tuple"/>
+                                            <input id="place" type="text" />
                                             <span asp-validation-for="@tuple.Place" class="text-danger"></span>
                                         </td>
                                     }
@@ -47,17 +45,61 @@
                 }
             }
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Добави" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад към състезателните класове</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const judges = form.querySelectorAll('#judge');
+            const name = document.querySelector('h4');
+            const coupleInputs = Array.prototype.slice.call(form.querySelectorAll('#couple'));
+            const placesInputs = Array.prototype.slice.call(form.querySelectorAll('#place'));
+
+
+            let dict = {}
+            var couplesCount = coupleInputs.length / judges.length;
+
+            for (let j = 0; j < judges.length; j++) {
+
+                const tuples = [];
+
+                for (let i = 0; i < couplesCount; i++) {
+                    const couple = coupleInputs.shift().innerText.toString();
+                    console.log(couple)
+
+                    const place = placesInputs.shift().value;
+                    tuples.push([couple, place]);
+                }
+                dict[judges[j].innerText] = tuples;
+            }
+            console.log(name);
+
+            dict["name"] = name.innerText;
+
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify(dict),
+                url: "/CompetetiveClass/Judge",
+                contentType: "application/json",
+                success: function (result) {
+                    location.href = "/CompetetiveClass/Index"
+                },
+            });
+        });
+    </script>
     }

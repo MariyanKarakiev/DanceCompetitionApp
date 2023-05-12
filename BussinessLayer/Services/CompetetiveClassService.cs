@@ -36,7 +36,26 @@ namespace BussinessLayer.Services
                 CreatedOn = c.CreatedOn
             }).ToList();
 
-            foreach(var c in compClass)
+            foreach (var c in compClass)
+            {
+                c.CouplesCount = coupleService.GetAll(c.Name).Count;
+            }
+
+            return compClass;
+        }
+        public List<CompetetiveClass> GetAll()
+        {
+            var compClass = ReadCsv().Select(c =>
+            new CompetetiveClass()
+            {
+                Name = c.Name,
+                CompetitionName = c.CompetitionName,
+                CouplesCount = c.CouplesCount,
+                JudgesCount = c.JudgesCount,
+                CreatedOn = c.CreatedOn
+            }).ToList();
+
+            foreach (var c in compClass)
             {
                 c.CouplesCount = coupleService.GetAll(c.Name).Count;
             }
@@ -56,7 +75,9 @@ namespace BussinessLayer.Services
 
             if (compClass != null)
             {
+                competetiveClass.CreatedOn = DateTime.Now;
                 compClass.Add(competetiveClass);
+
                 WriteCsv(compClass, true);
             }
         }

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Добавяне на двойка</h1>
+<h1>Добавяне на състезателна двойка</h1>
  
 <hr />
 <div class="row">
@@ -12,7 +12,7 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label class="control-label">Име</label>
+                <label class="control-label">Номер</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>                         
@@ -24,7 +24,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Назад към двойки</a>
+    <a asp-action="Index">Назад към състезателните двойки</a>
 </div>
 
 @section Scripts {

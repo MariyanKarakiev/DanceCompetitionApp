@@ -1,0 +1,63 @@
+﻿@model JudgingViewModel
+
+@{
+    ViewData["Title"] = "Judge";
+}
+
+<h1>Judge</h1>
+
+<h4>JudgingViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Judge">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @{
+                foreach (var judge in Model.JudgePlacing)
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>  <h4>@judge.Key</h4></th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                @{
+                                    foreach (var tuple in @judge.Value)
+                                    {
+                                        <th>  <h6>@tuple.Couple</h6></th>
+
+                                    }
+                                }
+                            </tr>
+                            <tr>
+                                @{
+                                    foreach (var tuple in @judge.Value)
+                                    {
+                                        <td>
+                                            <input asp-for="@tuple"/>
+                                            <span asp-validation-for="@tuple.Place" class="text-danger"></span>
+                                        </td>
+                                    }
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+            }
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

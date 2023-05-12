@@ -16,11 +16,31 @@ namespace BussinessLayer.Services
     public class CompetetiveClassService
     {
         string compClassesFile = @".\CompetetiveClasses.csv";
-        string judgesFile = @".\CompetetiveClasses.csv";
+        private readonly CoupleService coupleService;
 
-        public List<CompetetiveClass> GetAll()
+
+        public CompetetiveClassService(CoupleService _coupleService)
         {
-            var compClass = ReadCsv();
+            coupleService = _coupleService;
+        }
+
+        public List<CompetetiveClass> GetAll(string competition)
+        {
+            var compClass = ReadCsv().Where(c => c.CompetitionName == competition).Select(c =>
+            new CompetetiveClass()
+            {
+                Name = c.Name,
+                CompetitionName = c.CompetitionName,
+                CouplesCount = c.CouplesCount,
+                JudgesCount = c.JudgesCount,
+                CreatedOn = c.CreatedOn
+            }).ToList();
+
+            foreach(var c in compClass)
+            {
+                c.CouplesCount = coupleService.GetAll(c.Name).Count;
+            }
+
             return compClass;
         }
         public CompetetiveClass Get(string name)
@@ -30,23 +50,17 @@ namespace BussinessLayer.Services
             var competitionToDelete = compClass.Where(c => c.Name == name).FirstOrDefault();
             return competitionToDelete;
         }
-        public void Create(string name, string competitionName)
+        public void Create(CompetetiveClass competetiveClass)
         {
-            var competitionToCreate = new CompetetiveClass()
-            {
-                Name = name,
-                CompetitionName = competitionName,
-                CreatedOn = DateTime.Now
-            };
-
             var compClass = ReadCsv();
 
             if (compClass != null)
             {
-                compClass.Add(competitionToCreate);
+                compClass.Add(competetiveClass);
                 WriteCsv(compClass, true);
             }
         }
+
         public void Delete(string name)
         {
             var compClass = ReadCsv();
@@ -67,6 +81,8 @@ namespace BussinessLayer.Services
 
                 competitionToUpdate.Name = compClass.Name;
                 competitionToUpdate.CompetitionName = compClass.CompetitionName;
+                competitionToUpdate.JudgesCount = compClass.JudgesCount;
+                competitionToUpdate.CouplesCount = compClass.CouplesCount;
                 competitionToUpdate.UpdatedOn = DateTime.Now;
                 competitionToUpdate.CreatedOn = compClass.CreatedOn;
                 competitionToUpdate.DeletedOn = compClass.DeletedOn;
@@ -79,7 +95,7 @@ namespace BussinessLayer.Services
         {
             var judges = new List<string>();
 
-            for (int i = 65; i < count+65; i++)
+            for (int i = 65; i < count + 65; i++)
             {
                 judges.Add(((char)i).ToString());
             }
@@ -118,9 +134,6 @@ namespace BussinessLayer.Services
             }
 
         }
-    
-
-        
 
         private List<CompetetiveClass> ReadCsv()
         {

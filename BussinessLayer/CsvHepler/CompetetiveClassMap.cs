@@ -17,6 +17,7 @@ namespace BussinessLayer.CsvHepler
             Map(m => m.CreatedOn).Index(2).Name("Създанено");
             Map(m => m.UpdatedOn).Index(3).Name("Редактирано");
             Map(m => m.DeletedOn).Index(4).Name("Изтрито");
+            Map(m => m.JudgesCount).Index(5).Name("Съдии");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BussinessLayer.Models.CompetetiveClassViewModel>
+﻿@model IEnumerable<DanceCompetitionApp.CompetetiveClassViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -6,27 +6,33 @@
 }
 
 <h1>@ViewData["CompetitionName"]</h1>
+<p> <a asp-controller="Competition" asp-action="Index">Назад към състезания</a> </p>
 
 <table class="table m-0">
     <thead>
         <tr>
             <th>Name</th>
+            <th>Judges</th>
+            <th>Couples</th>
             <th>CreatedOn</th>
             <th>Competition</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @{
-            foreach (var competetiveClass in Model)
+            foreach (var couple in Model)
             {
                 <tr>
-                    <td>@competetiveClass.Name</td>
-                    <td>@competetiveClass.CreatedOn</td>
+                    <td>@couple.Name</td>
+                    <td>@couple.JudgesCount</td>
+                    <td>@couple.CouplesCount</td>
+                    <td>@couple.CreatedOn</td>
                     <td>
-                        <a asp-controller="Couple" asp-action="Index" asp-route-name="@competetiveClass.Name" class="btn btn-outline-primary">Couples</a>
-                        <a asp-action="Details" asp-route-name="@competetiveClass.Name" class="btn btn-outline-primary">Details</a>
-                        <a asp-action="Edit" asp-route-name="@competetiveClass.Name" class="btn btn-outline-primary">Edit</a>
-                        <a asp-action="Delete" asp-route-name="@competetiveClass.Name" class="btn btn-outline-primary">Delete</a>
+                        <a asp-action="Judge" asp-route-name="@couple.Name" class="btn btn-outline-primary">Добави оценяване</a>
+                        <a asp-controller="Couple" asp-action="Index" asp-route-name="@couple.Name" class="btn btn-outline-primary">Двойки/Класация</a>
+                        <a asp-action="Edit" asp-route-name="@couple.Name" class="btn btn-outline-primary">Редактирай</a>
+                        <a asp-action="Delete" asp-route-name="@couple.Name" class="btn btn-outline-primary">Изтрий</a>
                     </td>
                 </tr>
             }

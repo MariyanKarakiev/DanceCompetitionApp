@@ -1,9 +1,10 @@
 ﻿using BussinessLayer.Models;
 using BussinessLayer.Services;
+using DanceCompetitionApp;
+using Executable_test.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using System.Xml.Linq;
 
 namespace Executable_test.Controllers
 {
@@ -11,13 +12,19 @@ namespace Executable_test.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly CompetetiveClassService _competetiveClassService;
+        private readonly CoupleService _coupleService;
         private readonly IMemoryCache _memeoryCache;
 
-        public CompetetiveClassController(ILogger<HomeController> logger, IMemoryCache memeoryCache, CompetetiveClassService competetiveClassService)
+        public CompetetiveClassController(
+            ILogger<HomeController> logger,
+            IMemoryCache memeoryCache,
+            CompetetiveClassService competetiveClassService,
+            CoupleService coupleService)
         {
             _logger = logger;
             _competetiveClassService = competetiveClassService;
             _memeoryCache = memeoryCache;
+            _coupleService = coupleService;
         }
         // GET: CompetetiveClassController
         public ActionResult Index(string name)
@@ -29,13 +36,14 @@ namespace Executable_test.Controllers
 
             var competitionName = (string)_memeoryCache.Get("competition");
 
-            var all = _competetiveClassService.GetAll().Where(c => c.CompetitionName == competitionName).ToList();
+            var all = _competetiveClassService.GetAll(competitionName).ToList();
 
             var classes = all.Select(a =>
             new CompetetiveClassViewModel()
             {
                 Name = a.Name,
-                CompetitionName = a.CompetitionName,
+                CouplesCount = a.CouplesCount,
+                JudgesCount = a.JudgesCount,
                 CreatedOn = a.CreatedOn,
                 UpdatedOn = a.UpdatedOn,
                 DeletedOn = a.DeletedOn
@@ -61,17 +69,23 @@ namespace Executable_test.Controllers
         // POST: CompetetiveClassController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CompetetiveClass competetiveClass)
+        public ActionResult Create(CompetetiveClass model)
         {
-            try
+
+            var competitionName = _memeoryCache.Get("competition").ToString();
+
+            var competetiveClass = new CompetetiveClass()
             {
-                _competetiveClassService.Create(competetiveClass.Name, _memeoryCache.Get("competition").ToString());
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+                Name = model.Name,
+                JudgesCount = model.JudgesCount,
+                CouplesCount = model.CouplesCount,
+                CompetitionName = competitionName
+            };
+
+            _competetiveClassService.Create(competetiveClass);
+            return RedirectToAction(nameof(Index));
+
+
         }
 
         // GET: CompetetiveClassController/Edit/5
@@ -139,6 +153,33 @@ namespace Executable_test.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult Judge(string name)
+        {
+            var competetiveClass = _competetiveClassService.Get(name);
+
+            var model = new JudgingViewModel();
+
+            var couples = _coupleService.GetAll(name);
+
+            var judgesCount = couples.First().JudgesCount;
+
+            for (int c = 0; c < int.Parse(judgesCount); c++)
+            {
+                var judgeName = $"Judge{((char)(c + 65)).ToString()}";
+
+                model.JudgePlacing.Add(judgeName, couples.Select(c => ((string)c.Name, "0")).ToList());
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Judge(JudgingViewModel model)
+        {
+            return RedirectToAction(nameof(Index));
         }
     }
 }

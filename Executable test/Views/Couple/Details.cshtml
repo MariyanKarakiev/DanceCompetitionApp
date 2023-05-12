@@ -2,54 +2,49 @@
 
 @{
     ViewData["Title"] = "Details";
+    var couple = Model;
 }
 
 <h1>Details</h1>
 
 <div>
-    <h4>CoupleViewModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-       
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CompetetiveClass)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CompetetiveClass)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.JudgesCount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.JudgesCount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedOn)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedOn)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedOn)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedOn)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeletedOn)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeletedOn)
-        </dd>
-    </dl>
+    <table class="table">
+        <thead>
+            <tr>
+                <th> @Html.DisplayNameFor(model => model.Name)</th>
+                <th style="color:red"> @Html.DisplayNameFor(model => model.Place)</th>
+                @{
+                    foreach (var judge in couple.JudgePlaceList)
+                    {
+                        <td>@judge.Item1</td>
+                    }
+                }
+                <th> @Html.DisplayNameFor(model => model.CompetetiveClass)</th>
+                <th> @Html.DisplayNameFor(model => model.CreatedOn)</th>
+                <th> @Html.DisplayNameFor(model => model.UpdatedOn)</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@couple.Name</td>
+                <td style="color:red">@couple.Place</td>
+                @{
+                    foreach (var judge in couple.JudgePlaceList)
+                    {
+                        <td>@judge.Item2</td>
+                    }
+                }
+                <td>@couple.CompetetiveClass</td>
+                <td>@couple.CreatedOn</td>
+                <td>@couple.UpdatedOn</td>
+                <td>
+                    <a asp-action="Delete" asp-route-name="@couple.Name" class="btn btn-outline-primary">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
     <a asp-action="Index">Back to List</a>
 </div>

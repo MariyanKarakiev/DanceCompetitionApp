@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Dynamic;
 using System.Numerics;
+using System.Diagnostics.Metrics;
 
 namespace BussinessLayer.Services
 {
@@ -22,32 +23,20 @@ namespace BussinessLayer.Services
         public CoupleService() { }
 
 
-        public IEnumerable<Couple> GetAll(string compClass)
+        public List<dynamic> GetAll(string compClass)
         {
             var couples = ReadCsv();
 
-            var result = couples.Where(c => c.CompetetiveClass == compClass).Select(c => new Couple()
-            {
-                Name = c.Name,
-                CompetetiveClass = c.CompetetiveClass
-            }).ToList();
+            var result = couples.Where(c => c.CompetetiveClass == compClass).ToList();
 
             return result;
         }
-        public Couple Get(string name, string compClass)
+        public dynamic Get(string name, string compClass)
         {
             //get the one with the right compClass
-            var couples = ReadCsv();
+            var couples = ReadCsv().Where(c => c.Name == name && c.CompetetiveClass == compClass).FirstOrDefault();
 
-            var result = couples.Where(c => c.Name == name && c.CompetetiveClass == compClass).Select(c =>
-            new Couple()
-            {
-                Name = c.Name,
-                CompetetiveClass = c.CompetetiveClass,
-
-            }).FirstOrDefault();
-
-            return result;
+            return couples;
         }
 
         public void Create(Couple couple, int judgesCount)
@@ -63,7 +52,6 @@ namespace BussinessLayer.Services
         }
         public void Create(IEnumerable<Couple> couple, int judgesCount)
         {
-
 
             if (couple == null)
             {
@@ -108,6 +96,8 @@ namespace BussinessLayer.Services
             {
                 IDictionary<string, object> coupleDict = couple;
 
+                coupleDict.Add("JudgesCount", judgesCount);
+
                 foreach (var judge in judgesList)
                 {
                     if (coupleDict.ContainsKey(judge))
@@ -129,11 +119,9 @@ namespace BussinessLayer.Services
         private IEnumerable<dynamic> AddJudges(Couple couple, int judgesCount)
         {
             var coupleList = new List<Couple>() { couple };
-
+          
             return AddJudges(coupleList, judgesCount);
         }
-
-
 
         private void WriteCsv(IEnumerable<dynamic> objects, bool creating)
         {
@@ -141,30 +129,16 @@ namespace BussinessLayer.Services
             {
                 var couples = ReadCsv();
 
-                if (couples.Count() == 0 && creating)
+                using (var writer = new StreamWriter(couplesFile))
                 {
-                    using (var writer = new StreamWriter(couplesFile))
+                    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                     {
-                        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-                        {
-                            csv.WriteRecords(objects);
-                        }
-                    }
-
-                }
-
-                else
-                {
-                    using (var writer = new StreamWriter(couplesFile))
-                    {
-                        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-                        {
-                            csv.WriteRecords(objects);
-                        }
+                        csv.WriteRecords(objects);
                     }
                 }
             }
         }
+
         private IEnumerable<dynamic> ReadCsv()
         {
             IEnumerable<dynamic> result;
@@ -178,6 +152,29 @@ namespace BussinessLayer.Services
                 }
             }
             return result;
+        }
+
+        public void Adjuicate(string name, string compClass)
+        {
+            var couples = GetAll(compClass);
+
+            var couple = couples.Where(c => c.Name == name).FirstOrDefault();
+
+            IDictionary<string, object?> coupleDictionary = couple;
+
+            var sum = 0;
+            var judgesCount = int.Parse(coupleDictionary["JudgesCount"].ToString());
+
+            for (int i = 65; i < judgesCount + 65; i++)
+            {
+                var letter = $"Judge{(char)i}";
+                var place = coupleDictionary[letter];
+                sum += int.Parse(place.ToString());
+            }
+
+            couples.Where(c => c.Name == name).FirstOrDefault().Sum = sum;
+
+            WriteCsv(couples, false);
         }
     }
 }
